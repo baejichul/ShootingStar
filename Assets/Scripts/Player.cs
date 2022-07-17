@@ -78,34 +78,44 @@ public class Player : MonoBehaviour
                 {
                     case 1:
                         GameObject bullet = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f), transform.rotation);
+                        bullet.name = "PlayerBulletA";
+
                         _rigid = bullet.GetComponent<Rigidbody2D>();
                         _rigid.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
                         break;
                     case 2:
                         GameObject bulletL = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.left * 0.1f), transform.rotation);
+                        bulletL.name = "PlayerBulletA";
+
                         _rigidL = bulletL.GetComponent<Rigidbody2D>();
                         _rigidL.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
 
                         GameObject bulletR = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.right * 0.1f), transform.rotation);
+                        bulletR.name = "PlayerBulletA";
+
                         _rigidR = bulletR.GetComponent<Rigidbody2D>();
                         _rigidR.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
                         break;
                     case 3:
                         GameObject bulletCC = Instantiate(_bulletB, transform.position + (Vector3.up * 0.1f), transform.rotation);
+                        bulletCC.name = "PlayerBulletB";
+
                         _rigid = bulletCC.GetComponent<Rigidbody2D>();
                         _rigid.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
 
                         GameObject bulletLL = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.left * 0.3f), transform.rotation);
+                        bulletLL.name = "PlayerBulletA";
+
                         _rigidL = bulletLL.GetComponent<Rigidbody2D>();
                         _rigidL.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
 
                         GameObject bulletRR = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.right * 0.3f), transform.rotation);
+                        bulletRR.name = "PlayerBulletA";
+
                         _rigidR = bulletRR.GetComponent<Rigidbody2D>();
                         _rigidR.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
                         break;
                 }
-
-                
 
                 _curShotDelay = 0;
             }
