@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
 
     public GameObject _bulletA;
     public GameObject _bulletB;
+    public GameManager _gManager;
 
     public float _speed;
     public int _power;
@@ -28,6 +29,8 @@ public class Player : MonoBehaviour
     void Awake()
     {
         _ani = GetComponent<Animator>();
+        // _gManager = GameObject.FindObjectOfType<GameManager>();
+        _gManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
     }
     void Start()
     {
@@ -169,7 +172,11 @@ public class Player : MonoBehaviour
                     _isTouchRight = false;
                     break;
             }
-
+        }
+        else if (collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
+        {
+            _gManager.ReSpawnPlayer();
+            gameObject.SetActive(false);
         }
     }
 }
