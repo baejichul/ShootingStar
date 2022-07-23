@@ -11,6 +11,7 @@ TagManager:
   - SpawnGroup
   - EnemyBullet
   - GameManager
+  - Canvas
   layers:
   - Default
   - TransparentFX

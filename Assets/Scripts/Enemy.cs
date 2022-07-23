@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour
     public float _speed;
     public int _health;
     public float _curShotDelay;
+    public int _enemyScore;
 
     public Sprite[] _spArr;
     Sprite[] _enemyArr;
@@ -56,18 +57,21 @@ public class Enemy : MonoBehaviour
         {
             _speed = 3;
             _health = 3;
+            _enemyScore = 50;
             _spArr = new Sprite[] { _enemyArr[4], _enemyArr[5] };
         }
         else if (gameObject.name.StartsWith("EnemyM"))
         {
             _speed = 5;
             _health = 15;
+            _enemyScore = 200;
             _spArr = new Sprite[] { _enemyArr[6], _enemyArr[7] };
         }
         else if (gameObject.name.StartsWith("EnemyL"))
         {
             _speed = 1;
             _health = 50;
+            _enemyScore = 500;
             _spArr = new Sprite[] { _enemyArr[8], _enemyArr[9] };
         }
 
@@ -81,7 +85,12 @@ public class Enemy : MonoBehaviour
         // Debug.Log($"damage={damage}, _health={_health}");
 
         if (_health <= 0)
+        {
+            Player player = _gObjPlayer.GetComponent<Player>();
+            player._score += _enemyScore;
             Destroy(gameObject);
+        }
+            
     }
 
     void ReturnSprite()

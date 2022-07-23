@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +12,12 @@ public class GameManager : MonoBehaviour
     public GameObject _spawnGroup;
     public GameObject _gObjPlayer;
 
+    public Player player;
+    public GameObject _canvas;
+    public Text _txtScore;
+    public Image[] _imgLifeArr;
+    public GameObject _groupGameOver;
+
     public float _maxSpawnDelay;
     public float _curSpawnDelay;
 
@@ -17,9 +25,20 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        _canvas = GameObject.FindGameObjectWithTag("Canvas");
+        _txtScore = _canvas.transform.Find("TxtScore").GetComponent<Text>();
+        _imgLifeArr = new Image[]
+        {
+            _canvas.transform.Find("ImgLife").GetComponent<Image>()
+            , _canvas.transform.Find("ImgLife2").GetComponent<Image>()
+            , _canvas.transform.Find("ImgLife3").GetComponent<Image>()
+        };
+        _groupGameOver = _canvas.transform.Find("GroupGameOver").gameObject;
+
         _spawnGroup = GameObject.FindGameObjectWithTag("SpawnGroup");
         _spList = new List<Transform>();
         _gObjPlayer = GameObject.FindGameObjectWithTag("Player");
+        player = _gObjPlayer.GetComponent<Player>();
     }
 
     // Start is called before the first frame update
@@ -29,7 +48,6 @@ public class GameManager : MonoBehaviour
         InitSpawnPoints();
 
         _maxSpawnDelay = 2;
-
     }
 
     // Update is called once per frame
@@ -43,6 +61,8 @@ public class GameManager : MonoBehaviour
             _maxSpawnDelay = Random.Range(0.5f, 3.0f);
             _curSpawnDelay = 0;
         }
+        
+        _txtScore.text = string.Format("{0:n0}", player._score);
     }
 
     void InitSpawnPoints()
@@ -117,6 +137,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+    public void UpdateImgLife(int life)
+    {
+        for (int i = 0; i < Player.PLAYER_BASIC_LIFE; i++)
+        {
+            _imgLifeArr[i].color = new Color(1, 1, 1, 0);
+        }
+
+        for (int i = 0; i < life; i++) {
+            _imgLifeArr[i].color = new Color(1, 1, 1, 1);
+        }
+    }
+
     public void ReSpawnPlayer()
     {
         Invoke("ReSpawnPlayerExe", 2.0f);
@@ -126,5 +159,15 @@ public class GameManager : MonoBehaviour
     {
         _gObjPlayer.transform.position = Vector3.down * 3.5f;
         _gObjPlayer.SetActive(true);
+        player._isHit = false;
+    }
+    public void GameOver()
+    {
+        _groupGameOver.SetActive(true);
+    }
+
+    public void GameRetry()
+    {
+        SceneManager.LoadScene(0);
     }
 }

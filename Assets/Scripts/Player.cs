@@ -8,6 +8,10 @@ public class Player : MonoBehaviour
     public bool _isTouchBottom;
     public bool _isTouchLeft;
     public bool _isTouchRight;
+    public bool _isHit;
+
+    public int _life;
+    public int _score;
 
     public GameObject _bulletA;
     public GameObject _bulletB;
@@ -22,6 +26,7 @@ public class Player : MonoBehaviour
     Rigidbody2D _rigidL;
     Rigidbody2D _rigidR;
 
+    public const int PLAYER_BASIC_LIFE = 3;
     const int PLAYER_FIRE_FORCE = 10;
     const float PLAYER_FIRE_DELAY = 0.2f;
     const string RESOURCES_PREFABS_PATH = "Prefabs";
@@ -35,7 +40,8 @@ public class Player : MonoBehaviour
     void Start()
     {
         _speed = 3.0f;
-        _power = 1;
+        _power = 3;
+        _life  = PLAYER_BASIC_LIFE;
         _bulletA = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/PlayerBulletA");
         _bulletB = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/PlayerBulletB");
     }
@@ -175,8 +181,23 @@ public class Player : MonoBehaviour
         }
         else if (collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
         {
-            _gManager.ReSpawnPlayer();
+
+            if (_isHit)
+                return;
+
+            _isHit = true;
+            _life--;
+            _gManager.UpdateImgLife(_life);
+            if (_life == 0)
+            {
+                _gManager.GameOver();
+            }
+            else
+            {
+                _gManager.ReSpawnPlayer();
+            }
             gameObject.SetActive(false);
+            Destroy(collision.gameObject);
         }
     }
 }
