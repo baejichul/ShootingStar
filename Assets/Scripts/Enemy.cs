@@ -19,6 +19,9 @@ public class Enemy : MonoBehaviour
 
     public GameObject _bulletA;
     public GameObject _bulletB;
+    public GameObject _itemCoin;
+    public GameObject _itemPower;
+    public GameObject _itemBomb;
     public GameObject _gObjPlayer;
 
     SpriteRenderer _spr;
@@ -32,11 +35,14 @@ public class Enemy : MonoBehaviour
         _rigid = GetComponent<Rigidbody2D>();
 
         _enemyArr = Resources.LoadAll<Sprite>(RESOURCES_SPRITES_PATH + "/Enemies");
-        _bulletA = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/EnemyBulletA");
-        _bulletB = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/EnemyBulletB");
+        _bulletA  = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/EnemyBulletA");
+        _bulletB  = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/EnemyBulletB");
+
+        _itemCoin  = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/ItemCoin");
+        _itemPower = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/ItemPower");
+        _itemBomb  = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/ItemBomb");
 
         InitEnemy();
-
     }
 
     void Start()
@@ -77,8 +83,11 @@ public class Enemy : MonoBehaviour
 
         // Debug.Log($"InitEnemy {gameObject.name} : {_speed}");
     }
-    void OnHit(int damage)
+    public void OnHit(int damage)
     {
+        if (_health <= 0)
+            return;
+
         _health -= damage;
         _spr.sprite = _spArr[1];
         Invoke("ReturnSprite", 0.1f);
@@ -88,6 +97,26 @@ public class Enemy : MonoBehaviour
         {
             Player player = _gObjPlayer.GetComponent<Player>();
             player._score += _enemyScore;
+
+            // #Random Ratio Item Drop
+            int ran = Random.Range(0, 10);
+            if (ran < 3)
+            {
+                // Debug.Log("No Item");
+            }
+            else if (ran < 6)
+            {
+                Instantiate(_itemCoin, transform.position, _itemCoin.transform.rotation);
+            }
+            else if (ran < 8)
+            {
+                Instantiate(_itemPower, transform.position, _itemPower.transform.rotation);
+            }
+            else if (ran < 10)
+            {
+                Instantiate(_itemBomb, transform.position, _itemBomb.transform.rotation);
+            }
+                                
             Destroy(gameObject);
         }
             
@@ -102,6 +131,10 @@ public class Enemy : MonoBehaviour
     {   
         if (_curShotDelay < ENEMY_FIRE_DELAY)
             return;
+
+        if (!_gObjPlayer.activeSelf)
+            return;
+
 
         if (gameObject.name.StartsWith("EnemyS"))
         {

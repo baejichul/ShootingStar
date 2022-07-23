@@ -12,6 +12,8 @@ TagManager:
   - EnemyBullet
   - GameManager
   - Canvas
+  - Item
+  - Effect
   layers:
   - Default
   - TransparentFX

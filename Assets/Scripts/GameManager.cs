@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public GameObject _canvas;
     public Text _txtScore;
     public Image[] _imgLifeArr;
+    public Image[] _imgBombArr;
     public GameObject _groupGameOver;
 
     public float _maxSpawnDelay;
@@ -32,6 +33,12 @@ public class GameManager : MonoBehaviour
             _canvas.transform.Find("ImgLife").GetComponent<Image>()
             , _canvas.transform.Find("ImgLife2").GetComponent<Image>()
             , _canvas.transform.Find("ImgLife3").GetComponent<Image>()
+        };
+        _imgBombArr = new Image[]
+        {
+            _canvas.transform.Find("ImgBomb").GetComponent<Image>()
+            , _canvas.transform.Find("ImgBomb2").GetComponent<Image>()
+            , _canvas.transform.Find("ImgBomb3").GetComponent<Image>()
         };
         _groupGameOver = _canvas.transform.Find("GroupGameOver").gameObject;
 
@@ -73,10 +80,10 @@ public class GameManager : MonoBehaviour
         MakeSpawnPoints("Point2", new Vector3(-0.0f, _spawnGroup.transform.position.y, 0.0f));
         MakeSpawnPoints("Point3", new Vector3(0.9f, _spawnGroup.transform.position.y, 0.0f));
         MakeSpawnPoints("Point4", new Vector3(1.8f, _spawnGroup.transform.position.y, 0.0f));
-        MakeSpawnPoints("Point5", new Vector3(-5.0f, 2.0f, 0.0f));
-        MakeSpawnPoints("Point6", new Vector3(-5.0f, 3.0f, 0.0f));
-        MakeSpawnPoints("Point7", new Vector3(5.0f, 2.0f, 0.0f));
-        MakeSpawnPoints("Point8", new Vector3(5.0f, 3.0f, 0.0f));
+        MakeSpawnPoints("Point5", new Vector3(-5.0f, 3.0f, 0.0f));
+        MakeSpawnPoints("Point6", new Vector3(-5.0f, 4.0f, 0.0f));
+        MakeSpawnPoints("Point7", new Vector3(5.0f, 3.0f, 0.0f));
+        MakeSpawnPoints("Point8", new Vector3(5.0f, 4.0f, 0.0f));
 
         _spawnPoints = _spList.ToArray();
     }
@@ -95,6 +102,7 @@ public class GameManager : MonoBehaviour
         GameObject enemyM = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/EnemyM");
         GameObject enemyS = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/EnemyS");
         _enemyArr = new GameObject[] { enemyL, enemyM, enemyS };
+        // _enemyArr = new GameObject[] { enemyS, enemyS , enemyS };
     }
 
     void SpawnEnemy()
@@ -147,6 +155,19 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < life; i++) {
             _imgLifeArr[i].color = new Color(1, 1, 1, 1);
+        }
+    }
+
+    public void UpdateImgBomb(int bomb)
+    {
+        for (int i = 0; i < Player.PLAYER_MAX_BOMB; i++)
+        {
+            _imgBombArr[i].color = new Color(1, 1, 1, 0);
+        }
+
+        for (int i = 0; i < bomb; i++)
+        {
+            _imgBombArr[i].color = new Color(1, 1, 1, 1);
         }
     }
 
