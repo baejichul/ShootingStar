@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ITEM_TYPE
+{
+    BOMB = 0
+    , COIN
+    , POWER
+}
+
 public class Item : MonoBehaviour
 {
-    public enum ITEM_TYPE
-    {
-        BOMB = 0
-        , COIN
-        , POWER
-    }
-
     public ITEM_TYPE _type;
     Rigidbody2D _rigid;
 
@@ -18,9 +18,6 @@ public class Item : MonoBehaviour
 
     void Awake()
     {
-        _rigid = GetComponent<Rigidbody2D>();
-        _rigid.velocity = Vector2.down * ITEM_DOWN_SPEED;
-
         if ( gameObject.name.ToUpper().Contains( ITEM_TYPE.BOMB.ToString() ) )
             this._type = ITEM_TYPE.BOMB;
         else if (gameObject.name.ToUpper().Contains(ITEM_TYPE.COIN.ToString() ) )
@@ -30,6 +27,12 @@ public class Item : MonoBehaviour
 
         // Debug.Log($"gameObject.name = {gameObject.name}");
         // Debug.Log($"i_type = {_type}");
+    }
+
+    void OnEnable()
+    {
+        _rigid = GetComponent<Rigidbody2D>();
+        _rigid.velocity = Vector2.down * ITEM_DOWN_SPEED;
     }
 
     // Update is called once per frame

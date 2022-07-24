@@ -17,7 +17,8 @@ public class Player : MonoBehaviour
     public GameObject _bulletA;
     public GameObject _bulletB;
     public GameObject _bombEffect;
-    public GameManager _gManager;
+    public GameManager _gMgr;
+    public ObjectManager _objMgr;
 
     public float _speed;
     public int _power;
@@ -47,8 +48,9 @@ public class Player : MonoBehaviour
     {
         _ani = GetComponent<Animator>();
         _bombEffect = GameObject.FindGameObjectWithTag("Effect").transform.Find("BombEffect").gameObject;
-        // _gManager = GameObject.FindObjectOfType<GameManager>();
-        _gManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        // _gMgr = GameObject.FindObjectOfType<GameManager>();
+        _gMgr   = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        _objMgr = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
 
     }
     void Start()
@@ -105,40 +107,61 @@ public class Player : MonoBehaviour
                 switch (_power)
                 {
                     case 1:
-                        GameObject bullet = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f), transform.rotation);
-                        bullet.name = "PlayerBulletA";
+                        // GameObject bullet = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f), transform.rotation);
+                        // bullet.name = "PlayerBulletA";
+                        GameObject bullet = _objMgr.MakeObject(POOLING_OBJECT.PlayerBulletA);
+                        bullet.transform.position = transform.position + (Vector3.up * 0.1f);
+                        bullet.transform.rotation = transform.rotation;
 
                         _rigid = bullet.GetComponent<Rigidbody2D>();
                         _rigid.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
                         break;
                     case 2:
-                        GameObject bulletL = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.left * 0.1f), transform.rotation);
-                        bulletL.name = "PlayerBulletA";
+                        // GameObject bulletL = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.left * 0.1f), transform.rotation);
+                        // bulletL.name = "PlayerBulletA";
+
+                        GameObject bulletL = _objMgr.MakeObject(POOLING_OBJECT.PlayerBulletA);
+                        bulletL.transform.position = transform.position + (Vector3.up * 0.1f) + (Vector3.left * 0.1f);
+                        bulletL.transform.rotation = transform.rotation;
 
                         _rigidL = bulletL.GetComponent<Rigidbody2D>();
                         _rigidL.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
 
-                        GameObject bulletR = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.right * 0.1f), transform.rotation);
-                        bulletR.name = "PlayerBulletA";
+                        // GameObject bulletR = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.right * 0.1f), transform.rotation);
+                        // bulletR.name = "PlayerBulletA";
+
+                        GameObject bulletR = _objMgr.MakeObject(POOLING_OBJECT.PlayerBulletA);
+                        bulletR.transform.position = transform.position + (Vector3.up * 0.1f) + (Vector3.right * 0.1f);
+                        bulletR.transform.rotation = transform.rotation;
 
                         _rigidR = bulletR.GetComponent<Rigidbody2D>();
                         _rigidR.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
                         break;
                     case 3:
-                        GameObject bulletCC = Instantiate(_bulletB, transform.position + (Vector3.up * 0.1f), transform.rotation);
-                        bulletCC.name = "PlayerBulletB";
+                        // GameObject bulletCC = Instantiate(_bulletB, transform.position + (Vector3.up * 0.1f), transform.rotation);
+                        // bulletCC.name = "PlayerBulletB";
+                        GameObject bulletCC = _objMgr.MakeObject(POOLING_OBJECT.PlayerBulletB);
+                        bulletCC.transform.position = transform.position + (Vector3.up * 0.1f);
+                        bulletCC.transform.rotation = transform.rotation;
 
                         _rigid = bulletCC.GetComponent<Rigidbody2D>();
                         _rigid.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
 
-                        GameObject bulletLL = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.left * 0.3f), transform.rotation);
-                        bulletLL.name = "PlayerBulletA";
+                        // GameObject bulletLL = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.left * 0.3f), transform.rotation);
+                        // bulletLL.name = "PlayerBulletA";
+                        GameObject bulletLL = _objMgr.MakeObject(POOLING_OBJECT.PlayerBulletA);
+                        bulletLL.transform.position = transform.position + (Vector3.up * 0.1f) + (Vector3.left * 0.3f);
+                        bulletLL.transform.rotation = transform.rotation;
 
                         _rigidL = bulletLL.GetComponent<Rigidbody2D>();
                         _rigidL.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
 
-                        GameObject bulletRR = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.right * 0.3f), transform.rotation);
-                        bulletRR.name = "PlayerBulletA";
+                        // GameObject bulletRR = Instantiate(_bulletA, transform.position + (Vector3.up * 0.1f) + (Vector3.right * 0.3f), transform.rotation);
+                        // bulletRR.name = "PlayerBulletA";
+
+                        GameObject bulletRR = _objMgr.MakeObject(POOLING_OBJECT.PlayerBulletA);
+                        bulletRR.transform.position = transform.position + (Vector3.up * 0.1f) + (Vector3.right * 0.3f);
+                        bulletRR.transform.rotation = transform.rotation;
 
                         _rigidR = bulletRR.GetComponent<Rigidbody2D>();
                         _rigidR.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
@@ -163,25 +186,79 @@ public class Player : MonoBehaviour
 
         _bomb--;
         _isBombTime = true;
-        _gManager.UpdateImgBomb(_bomb);
+        _gMgr.UpdateImgBomb(_bomb);
 
         // #1. Effect visible
         _bombEffect.SetActive(true);
         Invoke("OffBoomEffect", 4.0f);
 
         // #2. Remove Enemy
+        /*
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject gObj in enemies)
         {
             Enemy en = gObj.GetComponent<Enemy>();
             en.OnHit(1000);
         }
+        */
+
+        GameObject[] enemiesL = _objMgr.GetPool(POOLING_OBJECT.EnemyL);
+        foreach (GameObject gObj in enemiesL)
+        {
+            if (gObj.activeSelf)
+            {
+                Enemy en = gObj.GetComponent<Enemy>();
+                en.OnHit(1000);
+            }
+        }
+        GameObject[] enemiesM = _objMgr.GetPool(POOLING_OBJECT.EnemyM);
+        foreach (GameObject gObj in enemiesM)
+        {
+            if (gObj.activeSelf)
+            {
+                Enemy en = gObj.GetComponent<Enemy>();
+                en.OnHit(1000);
+            }
+        }
+
+        GameObject[] enemiesS = _objMgr.GetPool(POOLING_OBJECT.EnemyS);
+        foreach (GameObject gObj in enemiesS)
+        {
+            if (gObj.activeSelf)
+            {
+                Enemy en = gObj.GetComponent<Enemy>();
+                en.OnHit(1000);
+            }
+        }
 
         // #3. Remove Bullet
+        /*
         GameObject[] bullets = GameObject.FindGameObjectsWithTag("EnemyBullet");
         foreach (GameObject gObj in bullets)
         {
-            Destroy(gObj);
+            //Destroy(gObj);
+            gObj.SetActive(false);
+        }
+        */
+
+        GameObject[] bulletsA = _objMgr.GetPool(POOLING_OBJECT.EnemyBulletA);
+        foreach (GameObject gObj in bulletsA)
+        {
+            if (gObj.activeSelf)
+            {
+                //Destroy(gObj);
+                gObj.SetActive(false);
+            }   
+        }
+
+        GameObject[] bulletsB = _objMgr.GetPool(POOLING_OBJECT.EnemyBulletB);
+        foreach (GameObject gObj in bulletsB)
+        {
+            if (gObj.activeSelf)
+            {
+                //Destroy(gObj);
+                gObj.SetActive(false);
+            }
         }
     }
 
@@ -224,45 +301,47 @@ public class Player : MonoBehaviour
 
             _isHit = true;
             _life--;
-            _gManager.UpdateImgLife(_life);
+            _gMgr.UpdateImgLife(_life);
             if (_life == 0)
             {
-                _gManager.GameOver();
+                _gMgr.GameOver();
             }
             else
             {
-                _gManager.ReSpawnPlayer();
+                _gMgr.ReSpawnPlayer();
             }
             gameObject.SetActive(false);
-            Destroy(collision.gameObject);
+            // Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
         }
         else if (collision.gameObject.tag == "Item")
         {
             Item item = collision.gameObject.GetComponent<Item>();
             switch (item._type)
             {
-                case Item.ITEM_TYPE.COIN:
+                case ITEM_TYPE.COIN:
                     _score += 1000;
                     break;
-                case Item.ITEM_TYPE.POWER:
+                case ITEM_TYPE.POWER:
                     if (_power == PLAYER_MAX_POWER)
                         _score += 500;
                     else
                         _power++;
                     break;
-                case Item.ITEM_TYPE.BOMB:
+                case ITEM_TYPE.BOMB:
                     if (_bomb == PLAYER_MAX_BOMB)
                         _score += 500;
                     else
                     {
                         _bomb++;
-                        _gManager.UpdateImgBomb(_bomb);
+                        _gMgr.UpdateImgBomb(_bomb);
                     }
                         
                     break;
             }
 
-            Destroy(collision.gameObject);
+            // Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
         }
     }
 

@@ -9,9 +9,9 @@ public class Bullet : MonoBehaviour
     void Start()
     {
         // Debug.Log($"gameObject.name = {gameObject.name}");
-        if (gameObject.name == "PlayerBulletA")
+        if (gameObject.name == POOLING_OBJECT.PlayerBulletA.ToString())
             _damage = 1;
-        else if (gameObject.name == "PlayerBulletB")
+        else if (gameObject.name == POOLING_OBJECT.PlayerBulletB.ToString())
             _damage = 3;
     }
 
@@ -21,7 +21,8 @@ public class Bullet : MonoBehaviour
         // Debug.Log(collision.gameObject.tag);
         if ( collision.gameObject.tag == "BorderBullet")
         {
-            Destroy(gameObject);
+            // Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }

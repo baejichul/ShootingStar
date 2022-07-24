@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     public Image[] _imgLifeArr;
     public Image[] _imgBombArr;
     public GameObject _groupGameOver;
+    public ObjectManager _objMgr;
 
     public float _maxSpawnDelay;
     public float _curSpawnDelay;
@@ -27,6 +28,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         _canvas = GameObject.FindGameObjectWithTag("Canvas");
+        _objMgr = GameObject.FindGameObjectWithTag("ObjectManager").gameObject.GetComponent<ObjectManager>();
         _txtScore = _canvas.transform.Find("TxtScore").GetComponent<Text>();
         _imgLifeArr = new Image[]
         {
@@ -51,7 +53,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InitEnemyArr();
+        // InitEnemyArr();
         InitSpawnPoints();
 
         _maxSpawnDelay = 2;
@@ -111,6 +113,7 @@ public class GameManager : MonoBehaviour
         // int ranEnemy = 2;
         int ranPoint = Random.Range(0, 9);
 
+        /* 
         GameObject gObjEenemy = Instantiate(_enemyArr[ranEnemy], _spawnPoints[ranPoint].position, _spawnPoints[ranPoint].rotation);
         switch (ranEnemy) {
             case 0:
@@ -123,10 +126,19 @@ public class GameManager : MonoBehaviour
                 gObjEenemy.name = "EnemyS";
                 break;
         }
+        */
+
+        POOLING_OBJECT[] enemyObject = new POOLING_OBJECT[]{ POOLING_OBJECT.EnemyL, POOLING_OBJECT.EnemyM, POOLING_OBJECT.EnemyS};
+        // POOLING_OBJECT[] enemyObject = new POOLING_OBJECT[] { POOLING_OBJECT.EnemyS, POOLING_OBJECT.EnemyS, POOLING_OBJECT.EnemyS }; // TEST
+
+        GameObject gObjEenemy = _objMgr.MakeObject(enemyObject[ranEnemy]);
+        gObjEenemy.transform.position = _spawnPoints[ranPoint].position;
+        gObjEenemy.transform.rotation = _spawnPoints[ranPoint].rotation;
 
         Rigidbody2D rigid = gObjEenemy.GetComponent<Rigidbody2D>();
         Enemy enemy = gObjEenemy.GetComponent<Enemy>();
         enemy._gObjPlayer = _gObjPlayer;
+        enemy._objMgr = _objMgr;
         // Debug.Log($"{gObjEenemy.name} : {enemy._speed}");
 
         if (ranPoint < 5)

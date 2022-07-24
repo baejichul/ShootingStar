@@ -14,6 +14,9 @@ TagManager:
   - Canvas
   - Item
   - Effect
+  - BoomEffect
+  - Manager
+  - ObjectManager
   layers:
   - Default
   - TransparentFX

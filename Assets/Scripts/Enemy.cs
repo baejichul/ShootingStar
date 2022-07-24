@@ -23,6 +23,7 @@ public class Enemy : MonoBehaviour
     public GameObject _itemPower;
     public GameObject _itemBomb;
     public GameObject _gObjPlayer;
+    public ObjectManager _objMgr;
 
     SpriteRenderer _spr;
     Rigidbody2D _rigid;
@@ -45,9 +46,14 @@ public class Enemy : MonoBehaviour
         InitEnemy();
     }
 
-    void Start()
-    {   
-        
+    void OnEnable()
+    {
+        if (gameObject.name.StartsWith(POOLING_OBJECT.EnemyS.ToString()))
+            _health = 3;
+        else if (gameObject.name.StartsWith(POOLING_OBJECT.EnemyM.ToString()))
+            _health = 15;
+        else if (gameObject.name.StartsWith(POOLING_OBJECT.EnemyL.ToString()))
+            _health = 50;
     }
 
     void Update()
@@ -59,21 +65,21 @@ public class Enemy : MonoBehaviour
 
     void InitEnemy()
     {
-        if (gameObject.name.StartsWith("EnemyS"))
+        if (gameObject.name.StartsWith(POOLING_OBJECT.EnemyS.ToString()))
         {
             _speed = 3;
             _health = 3;
             _enemyScore = 50;
             _spArr = new Sprite[] { _enemyArr[4], _enemyArr[5] };
         }
-        else if (gameObject.name.StartsWith("EnemyM"))
+        else if (gameObject.name.StartsWith(POOLING_OBJECT.EnemyM.ToString()))
         {
             _speed = 5;
             _health = 15;
             _enemyScore = 200;
             _spArr = new Sprite[] { _enemyArr[6], _enemyArr[7] };
         }
-        else if (gameObject.name.StartsWith("EnemyL"))
+        else if (gameObject.name.StartsWith(POOLING_OBJECT.EnemyL.ToString()))
         {
             _speed = 1;
             _health = 50;
@@ -106,18 +112,26 @@ public class Enemy : MonoBehaviour
             }
             else if (ran < 6)
             {
-                Instantiate(_itemCoin, transform.position, _itemCoin.transform.rotation);
+                // Instantiate(_itemCoin, transform.position, _itemCoin.transform.rotation);
+                GameObject item = _objMgr.MakeObject(POOLING_OBJECT.ItemCoin);
+                item.transform.position = transform.position;
             }
             else if (ran < 8)
             {
-                Instantiate(_itemPower, transform.position, _itemPower.transform.rotation);
+                // Instantiate(_itemPower, transform.position, _itemPower.transform.rotation);
+                GameObject item = _objMgr.MakeObject(POOLING_OBJECT.ItemPower);
+                item.transform.position = transform.position;
             }
             else if (ran < 10)
             {
-                Instantiate(_itemBomb, transform.position, _itemBomb.transform.rotation);
+                // Instantiate(_itemBomb, transform.position, _itemBomb.transform.rotation);
+                GameObject item = _objMgr.MakeObject(POOLING_OBJECT.ItemBomb);
+                item.transform.position = transform.position;
             }
-                                
-            Destroy(gameObject);
+
+            // Destroy(gameObject);
+            gameObject.SetActive(false);
+            // transform.rotation = Quaternion.identity;
         }
             
     }
@@ -138,8 +152,12 @@ public class Enemy : MonoBehaviour
 
         if (gameObject.name.StartsWith("EnemyS"))
         {
-            GameObject bullet = Instantiate(_bulletA, transform.position, transform.rotation);
-            bullet.name = "EnemyBulletA";
+            // GameObject bullet = Instantiate(_bulletA, transform.position, transform.rotation);
+            // bullet.name = "EnemyBulletA";
+            GameObject bullet = _objMgr.MakeObject(POOLING_OBJECT.EnemyBulletA);
+            bullet.transform.position = transform.position;
+            bullet.transform.rotation = transform.rotation;
+
             _rigid = bullet.GetComponent<Rigidbody2D>();
 
             Vector3 vec3 = _gObjPlayer.transform.position - transform.position;
@@ -147,11 +165,19 @@ public class Enemy : MonoBehaviour
         }
         if (gameObject.name.StartsWith("EnemyL"))
         {
-            GameObject bulletR = Instantiate(_bulletB, transform.position + (Vector3.right * 0.3f), transform.rotation);
-            GameObject bulletL = Instantiate(_bulletB, transform.position + (Vector3.left * 0.3f), transform.rotation);
+            // GameObject bulletR = Instantiate(_bulletB, transform.position + (Vector3.right * 0.3f), transform.rotation);
+            // GameObject bulletL = Instantiate(_bulletB, transform.position + (Vector3.left * 0.3f), transform.rotation);
 
-            bulletR.name = "EnemyBulletB";
-            bulletL.name = "EnemyBulletB";
+            // bulletR.name = "EnemyBulletB";
+            // bulletL.name = "EnemyBulletB";
+
+            GameObject bulletR = _objMgr.MakeObject(POOLING_OBJECT.EnemyBulletB);
+            bulletR.transform.position = transform.position + (Vector3.right * 0.3f);
+            bulletR.transform.rotation = transform.rotation;
+
+            GameObject bulletL = _objMgr.MakeObject(POOLING_OBJECT.EnemyBulletB);
+            bulletL.transform.position = transform.position + (Vector3.left * 0.3f);
+            bulletL.transform.rotation = transform.rotation;
 
             _rigidR = bulletR.GetComponent<Rigidbody2D>();
             _rigidL = bulletL.GetComponent<Rigidbody2D>();
@@ -174,12 +200,17 @@ public class Enemy : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "BorderBullet")
-            Destroy(gameObject);
+        {
+            // Destroy(gameObject);
+            gameObject.SetActive(false);
+            // transform.rotation = Quaternion.identity;
+        }
         else if (collision.gameObject.tag == "PlayerBullet")
         {
             Bullet bullet = collision.gameObject.GetComponent<Bullet>();
             OnHit(bullet._damage);
-            Destroy(collision.gameObject);
+            // Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
         }   
     }
 
