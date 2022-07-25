@@ -17,6 +17,7 @@ TagManager:
   - BoomEffect
   - Manager
   - ObjectManager
+  - Follower
   layers:
   - Default
   - TransparentFX

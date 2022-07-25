@@ -14,6 +14,7 @@ public enum POOLING_OBJECT
     , PlayerBulletB
     , EnemyBulletA
     , EnemyBulletB
+    , FollowerBullet
 }
 
 public class ObjectManager : MonoBehaviour
@@ -29,6 +30,7 @@ public class ObjectManager : MonoBehaviour
     [SerializeField] GameObject _bulletPlayerBPrefab;
     [SerializeField] GameObject _bulletEnemyAPrefab;
     [SerializeField] GameObject _bulletEnemyBPrefab;
+    [SerializeField] GameObject _bulletFollowerPrefab;
 
     [Header("GameObject")]
     GameObject[] _enemyL;
@@ -41,6 +43,7 @@ public class ObjectManager : MonoBehaviour
     GameObject[] _bulletPlayerB;
     GameObject[] _bulletEnemyA;
     GameObject[] _bulletEnemyB;
+    GameObject[] _bulletFollower;
 
     GameObject[] _targetPool;
 
@@ -56,6 +59,7 @@ public class ObjectManager : MonoBehaviour
         _bulletPlayerB = new GameObject[100];
         _bulletEnemyA = new GameObject[100];
         _bulletEnemyB = new GameObject[100];
+        _bulletFollower = new GameObject[100];
 
         Generate();
     }
@@ -130,7 +134,14 @@ public class ObjectManager : MonoBehaviour
             _bulletEnemyB[i] = Instantiate(_bulletEnemyBPrefab);
             _bulletEnemyB[i].name = POOLING_OBJECT.EnemyBulletB.ToString();
             _bulletEnemyB[i].SetActive(false);
-        }   
+        }
+
+        for (int i = 0; i < _bulletFollower.Length; i++)
+        {
+            _bulletFollower[i] = Instantiate(_bulletFollowerPrefab);
+            _bulletFollower[i].name = POOLING_OBJECT.FollowerBullet.ToString();
+            _bulletFollower[i].SetActive(false);
+        }
     }
 
     public GameObject MakeObject(POOLING_OBJECT type)
@@ -166,6 +177,9 @@ public class ObjectManager : MonoBehaviour
                 break;
             case POOLING_OBJECT.EnemyBulletB:
                 _targetPool = _bulletEnemyB;
+                break;
+            case POOLING_OBJECT.FollowerBullet:
+                _targetPool = _bulletFollower;
                 break;
         }
 
@@ -214,6 +228,9 @@ public class ObjectManager : MonoBehaviour
                 break;
             case POOLING_OBJECT.EnemyBulletB:
                 _targetPool = _bulletEnemyB;
+                break;
+            case POOLING_OBJECT.FollowerBullet:
+                _targetPool = _bulletFollower;
                 break;
         }
 

@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     public GameObject _bombEffect;
     public GameManager _gMgr;
     public ObjectManager _objMgr;
+    public GameObject[] _followersArr;
 
     public float _speed;
     public int _power;
@@ -39,7 +40,7 @@ public class Player : MonoBehaviour
     const int PLAYER_FIRE_FORCE = 10;
     const float PLAYER_FIRE_DELAY = 0.2f;
 
-    const int PLAYER_MAX_POWER = 3;
+    const int PLAYER_MAX_POWER = 6;
     public const int PLAYER_MAX_BOMB = 3;
 
     const string RESOURCES_PREFABS_PATH = "Prefabs";
@@ -51,7 +52,6 @@ public class Player : MonoBehaviour
         // _gMgr = GameObject.FindObjectOfType<GameManager>();
         _gMgr   = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         _objMgr = GameObject.FindGameObjectWithTag("ObjectManager").GetComponent<ObjectManager>();
-
     }
     void Start()
     {
@@ -137,7 +137,7 @@ public class Player : MonoBehaviour
                         _rigidR = bulletR.GetComponent<Rigidbody2D>();
                         _rigidR.AddForce(Vector2.up * PLAYER_FIRE_FORCE, ForceMode2D.Impulse);
                         break;
-                    case 3:
+                    default:
                         // GameObject bulletCC = Instantiate(_bulletB, transform.position + (Vector3.up * 0.1f), transform.rotation);
                         // bulletCC.name = "PlayerBulletB";
                         GameObject bulletCC = _objMgr.MakeObject(POOLING_OBJECT.PlayerBulletB);
@@ -273,6 +273,16 @@ public class Player : MonoBehaviour
         _isBombTime = false;
     }
 
+    void AddFollower()
+    {
+        if (_power == 4)
+            _followersArr[0].SetActive(true);
+        else if (_power == 5)
+            _followersArr[1].SetActive(true);
+        else if (_power == 6)
+            _followersArr[2].SetActive(true);
+    }
+
     void OnTriggerEnter2D(Collider2D collision)
     {
         if ( collision.gameObject.tag == "Border" )
@@ -326,7 +336,10 @@ public class Player : MonoBehaviour
                     if (_power == PLAYER_MAX_POWER)
                         _score += 500;
                     else
+                    {
                         _power++;
+                        AddFollower();
+                    }   
                     break;
                 case ITEM_TYPE.BOMB:
                     if (_bomb == PLAYER_MAX_BOMB)
