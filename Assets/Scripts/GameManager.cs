@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -20,10 +22,15 @@ public class GameManager : MonoBehaviour
     public GameObject _groupGameOver;
     public ObjectManager _objMgr;
 
-    public float _maxSpawnDelay;
+    public float _nextSpawnDelay;
     public float _curSpawnDelay;
 
+    public List<Spawn> _spawnList;
+    public int _spawnIndex;
+    public bool _spawnEnd;
+
     const string RESOURCES_PREFABS_PATH = "Prefabs";
+    const string RESOURCES_DATA_PATH = "Data";
 
     void Awake()
     {
@@ -48,6 +55,8 @@ public class GameManager : MonoBehaviour
         _spList = new List<Transform>();
         _gObjPlayer = GameObject.FindGameObjectWithTag("Player");
         player = _gObjPlayer.GetComponent<Player>();
+
+        _spawnList = new List<Spawn>();
     }
 
     // Start is called before the first frame update
@@ -55,8 +64,9 @@ public class GameManager : MonoBehaviour
     {
         // InitEnemyArr();
         InitSpawnPoints();
+        InitSpawnFile();
 
-        _maxSpawnDelay = 2;
+        //_nextSpawnDelay = 2;
     }
 
     // Update is called once per frame
@@ -64,16 +74,45 @@ public class GameManager : MonoBehaviour
     {
         _curSpawnDelay += Time.deltaTime;
 
-        if (_curSpawnDelay > _maxSpawnDelay)
+        if (_curSpawnDelay > _nextSpawnDelay && _spawnEnd == false)
         {
             SpawnEnemy();
-            _maxSpawnDelay = Random.Range(0.5f, 3.0f);
+            // _nextSpawnDelay = UnityEngine.Random.Range(0.5f, 3.0f);
             _curSpawnDelay = 0;
         }
         
         _txtScore.text = string.Format("{0:n0}", player._score);
     }
 
+    void InitSpawnFile()
+    {
+        // 1.변수 초기화
+        _spawnList.Clear();
+        _spawnIndex = 0;
+        _spawnEnd = false;
+
+        // 2.파일 읽기
+        TextAsset textFile = Resources.Load<TextAsset>(RESOURCES_DATA_PATH + "/Stage01");
+        StringReader _strR = new StringReader(textFile.text);
+
+        while(_strR != null)
+        {
+            string line = _strR.ReadLine();
+            // Debug.Log(line);
+            if (line == null)
+                break;
+
+            Spawn spawnData = new Spawn();
+            spawnData._delay = Convert.ToSingle(line.Split(',')[0]);
+            spawnData._type  = line.Split(',')[1];
+            spawnData._point = Convert.ToInt32(line.Split(',')[2]);
+            _spawnList.Add(spawnData);
+        }
+
+        _strR.Close();
+        _nextSpawnDelay = _spawnList[0]._delay;
+    }
+    
     void InitSpawnPoints()
     {
         // 상단에 위치
@@ -98,6 +137,7 @@ public class GameManager : MonoBehaviour
         _spList.Add(gObj0.transform);
     }
 
+    [Obsolete("This Method is deprecated")]
     void InitEnemyArr()
     {
         GameObject enemyL = Resources.Load<GameObject>(RESOURCES_PREFABS_PATH + "/EnemyL");
@@ -109,9 +149,24 @@ public class GameManager : MonoBehaviour
 
     void SpawnEnemy()
     {
-        int ranEnemy = Random.Range(0, 3);
+        int enemyIndex = 0;
+        switch (_spawnList[_spawnIndex]._type)
+        {
+            case "L":
+                enemyIndex = 0;
+                break;
+            case "M":
+                enemyIndex = 1;
+                break;
+            case "S":
+                enemyIndex = 2;
+                break;
+        }
+
+        // int ranEnemy = UnityEngine.Random.Range(0, 3);
         // int ranEnemy = 2;
-        int ranPoint = Random.Range(0, 9);
+        // int ranPoint = UnityEngine.Random.Range(0, 9);
+        int enemyPoint = _spawnList[_spawnIndex]._point;
 
         /* 
         GameObject gObjEenemy = Instantiate(_enemyArr[ranEnemy], _spawnPoints[ranPoint].position, _spawnPoints[ranPoint].rotation);
@@ -131,9 +186,9 @@ public class GameManager : MonoBehaviour
         POOLING_OBJECT[] enemyObject = new POOLING_OBJECT[]{ POOLING_OBJECT.EnemyL, POOLING_OBJECT.EnemyM, POOLING_OBJECT.EnemyS};
         // POOLING_OBJECT[] enemyObject = new POOLING_OBJECT[] { POOLING_OBJECT.EnemyS, POOLING_OBJECT.EnemyS, POOLING_OBJECT.EnemyS }; // TEST
 
-        GameObject gObjEenemy = _objMgr.MakeObject(enemyObject[ranEnemy]);
-        gObjEenemy.transform.position = _spawnPoints[ranPoint].position;
-        gObjEenemy.transform.rotation = _spawnPoints[ranPoint].rotation;
+        GameObject gObjEenemy = _objMgr.MakeObject(enemyObject[enemyIndex]);
+        gObjEenemy.transform.position = _spawnPoints[enemyPoint].position;
+        gObjEenemy.transform.rotation = _spawnPoints[enemyPoint].rotation;
 
         Rigidbody2D rigid = gObjEenemy.GetComponent<Rigidbody2D>();
         Enemy enemy = gObjEenemy.GetComponent<Enemy>();
@@ -141,20 +196,31 @@ public class GameManager : MonoBehaviour
         enemy._objMgr = _objMgr;
         // Debug.Log($"{gObjEenemy.name} : {enemy._speed}");
 
-        if (ranPoint < 5)
+        if (enemyPoint < 5)
         {
             rigid.velocity = new Vector2(0, enemy._speed * -1.0f);
         }
-        else if (ranPoint == 5 || ranPoint == 6)
+        else if (enemyPoint == 5 || enemyPoint == 6)
         {
             enemy.transform.Rotate(Vector3.forward * 90);
             rigid.velocity = new Vector2(enemy._speed, -1.0f);
         }
-        else if (ranPoint == 7 || ranPoint == 8)
+        else if (enemyPoint == 7 || enemyPoint == 8)
         {
-            enemy.transform.Rotate(Vector3.back*90);
+            enemy.transform.Rotate(Vector3.back * 90);
             rigid.velocity = new Vector2(enemy._speed * -1.0f, -1.0f);
         }
+
+        // 인덱스증가
+        _spawnIndex++;
+        if (_spawnIndex == _spawnList.Count)
+        {
+            _spawnEnd = true;
+            return;
+        }
+
+        // 딜레이 갱신
+        _nextSpawnDelay = _spawnList[_spawnIndex]._delay;
     }
 
 
