@@ -1535,8 +1535,10 @@ MonoBehaviour:
   _imgBombArr: []
   _groupGameOver: {fileID: 0}
   _objMgr: {fileID: 0}
-  _maxSpawnDelay: 0
+  _nextSpawnDelay: 0
   _curSpawnDelay: 0
+  _spawnIndex: 0
+  _spawnEnd: 0
 --- !u!4 &954682979
 Transform:
   m_ObjectHideFlags: 0
@@ -3112,6 +3114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3970c1c3b7bb52c4ebbb9b7c209ec352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemyBossPrefab: {fileID: 6460718204354129557, guid: 2c1d95038df3d344dbf15f5f984d3187, type: 3}
   _enemyLPrefab: {fileID: 1781301966374298843, guid: 6ac8192fd0af27c45a6b58cb6fc2256d, type: 3}
   _enemyMPrefab: {fileID: 6923212641102200256, guid: 18c74e1726cc2594e83baf073ae7b00c, type: 3}
   _enemySPrefab: {fileID: 4647763568106812310, guid: 6046f909935bde248a8f391ac84a14e9, type: 3}
@@ -3122,6 +3125,8 @@ MonoBehaviour:
   _bulletPlayerBPrefab: {fileID: 3806003465030038954, guid: 4d861865619625f4a919457232aaf048, type: 3}
   _bulletEnemyAPrefab: {fileID: 3806003465030038954, guid: 678e6a10d971e3c4aaa244919a997a1b, type: 3}
   _bulletEnemyBPrefab: {fileID: 3806003465030038954, guid: 6951098a27098e54c8b8ced1bc427372, type: 3}
+  _bulletBossAPrefab: {fileID: 3806003465030038954, guid: eb3d9cd4582024142a11c4e2720cae63, type: 3}
+  _bulletBossBPrefab: {fileID: 3806003465030038954, guid: c6b4f65c6454c5249b7532cda61e8e4d, type: 3}
   _bulletFollowerPrefab: {fileID: 8833833026428145677, guid: ce4551d61c3d45d4e92e88f76486f06d, type: 3}
 --- !u!1 &1835341893
 GameObject:

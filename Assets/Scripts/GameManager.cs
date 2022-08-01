@@ -161,6 +161,9 @@ public class GameManager : MonoBehaviour
             case "S":
                 enemyIndex = 2;
                 break;
+            case "B":
+                enemyIndex = 3;
+                break;
         }
 
         // int ranEnemy = UnityEngine.Random.Range(0, 3);
@@ -183,7 +186,7 @@ public class GameManager : MonoBehaviour
         }
         */
 
-        POOLING_OBJECT[] enemyObject = new POOLING_OBJECT[]{ POOLING_OBJECT.EnemyL, POOLING_OBJECT.EnemyM, POOLING_OBJECT.EnemyS};
+        POOLING_OBJECT[] enemyObject = new POOLING_OBJECT[]{ POOLING_OBJECT.EnemyL, POOLING_OBJECT.EnemyM, POOLING_OBJECT.EnemyS, POOLING_OBJECT.Boss };
         // POOLING_OBJECT[] enemyObject = new POOLING_OBJECT[] { POOLING_OBJECT.EnemyS, POOLING_OBJECT.EnemyS, POOLING_OBJECT.EnemyS }; // TEST
 
         GameObject gObjEenemy = _objMgr.MakeObject(enemyObject[enemyIndex]);

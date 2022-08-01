@@ -7,6 +7,7 @@ public enum POOLING_OBJECT
     EnemyL
     , EnemyM
     , EnemyS
+    , Boss
     , ItemCoin
     , ItemPower
     , ItemBomb
@@ -14,12 +15,15 @@ public enum POOLING_OBJECT
     , PlayerBulletB
     , EnemyBulletA
     , EnemyBulletB
+    , BossBulletA
+    , BossBulletB
     , FollowerBullet
 }
 
 public class ObjectManager : MonoBehaviour
 {
     [Header("Prefab")]
+    [SerializeField] GameObject _enemyBossPrefab;
     [SerializeField] GameObject _enemyLPrefab;
     [SerializeField] GameObject _enemyMPrefab;
     [SerializeField] GameObject _enemySPrefab;
@@ -30,9 +34,12 @@ public class ObjectManager : MonoBehaviour
     [SerializeField] GameObject _bulletPlayerBPrefab;
     [SerializeField] GameObject _bulletEnemyAPrefab;
     [SerializeField] GameObject _bulletEnemyBPrefab;
+    [SerializeField] GameObject _bulletBossAPrefab;
+    [SerializeField] GameObject _bulletBossBPrefab;
     [SerializeField] GameObject _bulletFollowerPrefab;
 
     [Header("GameObject")]
+    GameObject[] _enemyBoss;
     GameObject[] _enemyL;
     GameObject[] _enemyM;
     GameObject[] _enemyS;
@@ -43,12 +50,15 @@ public class ObjectManager : MonoBehaviour
     GameObject[] _bulletPlayerB;
     GameObject[] _bulletEnemyA;
     GameObject[] _bulletEnemyB;
+    GameObject[] _bulletBossA;
+    GameObject[] _bulletBossB;
     GameObject[] _bulletFollower;
 
     GameObject[] _targetPool;
 
     void Awake()
     {
+        _enemyBoss = new GameObject[10];
         _enemyL = new GameObject[10];
         _enemyM = new GameObject[10];
         _enemyS = new GameObject[20];
@@ -59,14 +69,23 @@ public class ObjectManager : MonoBehaviour
         _bulletPlayerB = new GameObject[100];
         _bulletEnemyA = new GameObject[100];
         _bulletEnemyB = new GameObject[100];
+        _bulletBossA = new GameObject[50];
+        _bulletBossB = new GameObject[1000];
         _bulletFollower = new GameObject[100];
 
         Generate();
     }
 
     void Generate()
-    {   
-        for(int i = 0; i< _enemyL.Length; i++)
+    {
+        for (int i = 0; i < _enemyBoss.Length; i++)
+        {
+            _enemyBoss[i] = Instantiate(_enemyBossPrefab);
+            _enemyBoss[i].name = POOLING_OBJECT.Boss.ToString();
+            _enemyBoss[i].SetActive(false);
+        }
+
+        for (int i = 0; i< _enemyL.Length; i++)
         {
             _enemyL[i] = Instantiate(_enemyLPrefab);
             _enemyL[i].name = POOLING_OBJECT.EnemyL.ToString();
@@ -136,6 +155,20 @@ public class ObjectManager : MonoBehaviour
             _bulletEnemyB[i].SetActive(false);
         }
 
+        for (int i = 0; i < _bulletBossA.Length; i++)
+        {
+            _bulletBossA[i] = Instantiate(_bulletBossAPrefab);
+            _bulletBossA[i].name = POOLING_OBJECT.BossBulletA.ToString();
+            _bulletBossA[i].SetActive(false);
+        }
+
+        for (int i = 0; i < _bulletBossB.Length; i++)
+        {
+            _bulletBossB[i] = Instantiate(_bulletBossBPrefab);
+            _bulletBossB[i].name = POOLING_OBJECT.BossBulletB.ToString();
+            _bulletBossB[i].SetActive(false);
+        }
+
         for (int i = 0; i < _bulletFollower.Length; i++)
         {
             _bulletFollower[i] = Instantiate(_bulletFollowerPrefab);
@@ -148,6 +181,9 @@ public class ObjectManager : MonoBehaviour
     {
         switch (type)
         {
+            case POOLING_OBJECT.Boss:
+                _targetPool = _enemyBoss;
+                break;
             case POOLING_OBJECT.EnemyL:
                 _targetPool = _enemyL;
                 break;
@@ -177,6 +213,12 @@ public class ObjectManager : MonoBehaviour
                 break;
             case POOLING_OBJECT.EnemyBulletB:
                 _targetPool = _bulletEnemyB;
+                break;
+            case POOLING_OBJECT.BossBulletA:
+                _targetPool = _bulletBossA;
+                break;
+            case POOLING_OBJECT.BossBulletB:
+                _targetPool = _bulletBossB;
                 break;
             case POOLING_OBJECT.FollowerBullet:
                 _targetPool = _bulletFollower;
@@ -199,6 +241,9 @@ public class ObjectManager : MonoBehaviour
     {
         switch (type)
         {
+            case POOLING_OBJECT.Boss:
+                _targetPool = _enemyBoss;
+                break;
             case POOLING_OBJECT.EnemyL:
                 _targetPool = _enemyL;
                 break;
@@ -228,6 +273,12 @@ public class ObjectManager : MonoBehaviour
                 break;
             case POOLING_OBJECT.EnemyBulletB:
                 _targetPool = _bulletEnemyB;
+                break;
+            case POOLING_OBJECT.BossBulletA:
+                _targetPool = _bulletBossA;
+                break;
+            case POOLING_OBJECT.BossBulletB:
+                _targetPool = _bulletBossB;
                 break;
             case POOLING_OBJECT.FollowerBullet:
                 _targetPool = _bulletFollower;

@@ -26,12 +26,25 @@ public class Enemy : MonoBehaviour
     public ObjectManager _objMgr;
 
     SpriteRenderer _spr;
+    Animator _anim;
     Rigidbody2D _rigid;
     Rigidbody2D _rigidL;
     Rigidbody2D _rigidR;
 
+    public int _patternIndex;
+    public int _curPatternCount;
+    public int[] _maxPatternCount;
+
     void Awake()
     {
+
+        if (gameObject.name.StartsWith(POOLING_OBJECT.Boss.ToString()))
+        {
+            _anim = GetComponent<Animator>();
+            _patternIndex = -1;
+            _maxPatternCount = new int[4] {2, 3, 100, 10};
+        }
+
         _spr = GetComponent<SpriteRenderer>();
         _rigid = GetComponent<Rigidbody2D>();
 
@@ -48,7 +61,14 @@ public class Enemy : MonoBehaviour
 
     void OnEnable()
     {
-        if (gameObject.name.StartsWith(POOLING_OBJECT.EnemyS.ToString()))
+        // 피격후 다시 생성될때 필요
+
+        if (gameObject.name.StartsWith(POOLING_OBJECT.Boss.ToString()))
+        {
+            _health = 3000;
+            Invoke("StopEnemyBoss", 2);
+        }
+        else if (gameObject.name.StartsWith(POOLING_OBJECT.EnemyS.ToString()))
             _health = 3;
         else if (gameObject.name.StartsWith(POOLING_OBJECT.EnemyM.ToString()))
             _health = 15;
@@ -58,10 +78,12 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
+        if (gameObject.name.Equals( POOLING_OBJECT.Boss.ToString()))
+            return;
+
         Fire();
         Reload();
-    }
-
+    }   
 
     void InitEnemy()
     {
@@ -86,17 +108,31 @@ public class Enemy : MonoBehaviour
             _enemyScore = 500;
             _spArr = new Sprite[] { _enemyArr[8], _enemyArr[9] };
         }
+        else if (gameObject.name.StartsWith(POOLING_OBJECT.Boss.ToString()))
+        {
+            _speed = 1.5f;
+            _health = 3000;
+            _enemyScore = 5000;
+        }
 
         // Debug.Log($"InitEnemy {gameObject.name} : {_speed}");
     }
+
     public void OnHit(int damage)
     {
         if (_health <= 0)
             return;
 
         _health -= damage;
-        _spr.sprite = _spArr[1];
-        Invoke("ReturnSprite", 0.1f);
+        if (gameObject.name.Equals(POOLING_OBJECT.Boss.ToString()))
+        {
+            _anim.SetTrigger("OnHit");
+        }
+        else
+        {
+            _spr.sprite = _spArr[1];
+            Invoke("ReturnSprite", 0.1f);
+        }        
         // Debug.Log($"damage={damage}, _health={_health}");
 
         if (_health <= 0)
@@ -105,7 +141,7 @@ public class Enemy : MonoBehaviour
             player._score += _enemyScore;
 
             // #Random Ratio Item Drop
-            int ran = Random.Range(0, 10);
+            int ran = ( gameObject.name.Equals(POOLING_OBJECT.Boss.ToString()) ) ? 0 : Random.Range(0, 10);
             if (ran < 3)
             {
                 // Debug.Log("No Item");
@@ -192,14 +228,90 @@ public class Enemy : MonoBehaviour
         _curShotDelay = 0;
     }
 
+    void FireFoward()
+    {
+        Debug.Log("앞으로 4발 발사");
+
+        _curPatternCount++;
+        if (_curPatternCount < _maxPatternCount[_patternIndex])
+            Invoke("FireFoward", 2);
+        else
+            Invoke("FireEnemyBoss", 3);
+    }
+
+    void FireShot()
+    {
+        Debug.Log("플레이어 방향으로 샷건");
+
+        _curPatternCount++;
+        if (_curPatternCount < _maxPatternCount[_patternIndex])
+            Invoke("FireShot", 3.5f);
+        else
+            Invoke("FireEnemyBoss", 3);
+    }
+
+    void FireArc()
+    {
+        Debug.Log("부채모양으로 발사");
+
+        _curPatternCount++;
+        if (_curPatternCount < _maxPatternCount[_patternIndex])
+            Invoke("FireArc", 0.15f);
+        else
+            Invoke("FireEnemyBoss", 3);
+    }
+
+    void FireAround()
+    {
+        Debug.Log("원형태로 전체 발사");
+
+        _curPatternCount++;
+        if (_curPatternCount < _maxPatternCount[_patternIndex])
+            Invoke("FireAround", 0.7f);
+        else
+            Invoke("FireEnemyBoss", 3);
+    }
+
     void Reload()
     {
         _curShotDelay += Time.deltaTime;
     }
 
+    void StopEnemyBoss()
+    {
+        if (gameObject.activeSelf)
+        {
+            Rigidbody2D rigid = GetComponent<Rigidbody2D>();
+            rigid.velocity = Vector2.zero;
+            Invoke("FireEnemyBoss", 2);
+        }
+    }
+
+    void FireEnemyBoss()
+    {
+        _patternIndex = _patternIndex == 3 ? 0 : _patternIndex + 1;
+        _curPatternCount = 0;
+
+        switch (_patternIndex)
+        {
+            case 0:
+                FireFoward();
+                break;
+            case 1:
+                FireShot();
+                break;
+            case 2:
+                FireArc();
+                break;
+            case 3:
+                FireAround();
+                break;
+        }
+    }
+
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "BorderBullet")
+        if ( collision.gameObject.tag == "BorderBullet" && gameObject.name != POOLING_OBJECT.Boss.ToString() )
         {
             // Destroy(gameObject);
             gameObject.SetActive(false);

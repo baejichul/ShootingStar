@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public int _damage;
+    public bool _isRotate;
 
     void Start()
     {
@@ -13,8 +14,15 @@ public class Bullet : MonoBehaviour
             _damage = 1;
         else if (gameObject.name == POOLING_OBJECT.PlayerBulletB.ToString())
             _damage = 3;
+        else if (gameObject.name == POOLING_OBJECT.BossBulletA.ToString())
+            _isRotate = true;
     }
 
+    private void Update()
+    {
+        if (_isRotate)
+            transform.Rotate(Vector3.forward * 10);
+    }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
