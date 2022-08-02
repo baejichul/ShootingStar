@@ -30,6 +30,8 @@ public class Enemy : MonoBehaviour
     Rigidbody2D _rigid;
     Rigidbody2D _rigidL;
     Rigidbody2D _rigidR;
+    Rigidbody2D _rigidLL;
+    Rigidbody2D _rigidRR;
 
     public int _patternIndex;
     public int _curPatternCount;
@@ -42,7 +44,7 @@ public class Enemy : MonoBehaviour
         {
             _anim = GetComponent<Animator>();
             _patternIndex = -1;
-            _maxPatternCount = new int[4] {2, 3, 100, 10};
+            _maxPatternCount = new int[4] {2, 3, 99, 10};
         }
 
         _spr = GetComponent<SpriteRenderer>();
@@ -230,7 +232,33 @@ public class Enemy : MonoBehaviour
 
     void FireFoward()
     {
-        Debug.Log("앞으로 4발 발사");
+        // Debug.Log("앞으로 4발 발사");
+
+        GameObject bulletR = _objMgr.MakeObject(POOLING_OBJECT.BossBulletB);
+        bulletR.transform.position = transform.position + (Vector3.right * 0.3f);
+        // bulletR.transform.rotation = transform.rotation;
+
+        GameObject bulletRR = _objMgr.MakeObject(POOLING_OBJECT.BossBulletB);
+        bulletRR.transform.position = transform.position + (Vector3.right * 0.5f);
+        // bulletRR.transform.rotation = transform.rotation;
+
+        GameObject bulletL = _objMgr.MakeObject(POOLING_OBJECT.BossBulletB);
+        bulletL.transform.position = transform.position + (Vector3.left * 0.3f);
+        // bulletL.transform.rotation = transform.rotation;
+
+        GameObject bulletLL = _objMgr.MakeObject(POOLING_OBJECT.BossBulletB);
+        bulletLL.transform.position = transform.position + (Vector3.left * 0.5f);
+        // bulletLL.transform.rotation = transform.rotation;
+
+        _rigidR = bulletR.GetComponent<Rigidbody2D>();
+        _rigidL = bulletL.GetComponent<Rigidbody2D>();
+        _rigidRR = bulletRR.GetComponent<Rigidbody2D>();
+        _rigidLL = bulletLL.GetComponent<Rigidbody2D>();
+
+        _rigidR.AddForce(Vector2.down * ENEMY_FIRE_FORCE * 2, ForceMode2D.Impulse);
+        _rigidL.AddForce(Vector2.down * ENEMY_FIRE_FORCE * 2, ForceMode2D.Impulse);
+        _rigidRR.AddForce(Vector2.down * ENEMY_FIRE_FORCE * 2, ForceMode2D.Impulse);
+        _rigidLL.AddForce(Vector2.down * ENEMY_FIRE_FORCE * 2, ForceMode2D.Impulse);
 
         _curPatternCount++;
         if (_curPatternCount < _maxPatternCount[_patternIndex])
@@ -241,7 +269,21 @@ public class Enemy : MonoBehaviour
 
     void FireShot()
     {
-        Debug.Log("플레이어 방향으로 샷건");
+        // Debug.Log("플레이어 방향으로 샷건");
+
+        for (int i=0; i < 5; i++)
+        {
+            GameObject bullet = _objMgr.MakeObject(POOLING_OBJECT.EnemyBulletB);
+            bullet.transform.position = transform.position;
+            bullet.transform.rotation = transform.rotation;
+
+            _rigid = bullet.GetComponent<Rigidbody2D>();
+
+            Vector2 vec2 = _gObjPlayer.transform.position - transform.position;
+            Vector2 ranVec = new Vector2(Random.Range(-0.5f, 0.5f), Random.Range(-0.0f, 2.0f));
+            vec2 += ranVec;
+            _rigid.AddForce(vec2.normalized * (ENEMY_FIRE_FORCE - 1), ForceMode2D.Impulse);
+        }
 
         _curPatternCount++;
         if (_curPatternCount < _maxPatternCount[_patternIndex])
@@ -252,7 +294,17 @@ public class Enemy : MonoBehaviour
 
     void FireArc()
     {
-        Debug.Log("부채모양으로 발사");
+        // Debug.Log("부채모양으로 발사");
+       
+        GameObject bullet = _objMgr.MakeObject(POOLING_OBJECT.EnemyBulletA);
+        bullet.transform.position = transform.position;
+        bullet.transform.rotation = Quaternion.identity;
+
+        _rigid = bullet.GetComponent<Rigidbody2D>();
+
+        //Vector2 vec2 = new Vector2(Mathf.Sin(Mathf.PI * 10.0f * _curPatternCount / _maxPatternCount[_patternIndex]), -1.0f);
+        Vector2 vec2 = new Vector2(Mathf.Cos(Mathf.PI * 10.0f * _curPatternCount / _maxPatternCount[_patternIndex]), -1.0f);
+        _rigid.AddForce(vec2.normalized * (ENEMY_FIRE_FORCE - 1), ForceMode2D.Impulse);
 
         _curPatternCount++;
         if (_curPatternCount < _maxPatternCount[_patternIndex])
@@ -263,7 +315,27 @@ public class Enemy : MonoBehaviour
 
     void FireAround()
     {
-        Debug.Log("원형태로 전체 발사");
+        // Debug.Log("원형태로 전체 발사");
+
+        int roundNumA = 50;
+        int roundNumB = 40;
+        int roundNum  = ( _curPatternCount % 2 == 0 ) ? roundNumA : roundNumB;
+        for ( int i=0; i < roundNum; i++)
+        {
+            GameObject bullet = _objMgr.MakeObject(POOLING_OBJECT.BossBulletB);
+            bullet.transform.position = transform.position;
+            bullet.transform.rotation = Quaternion.identity;
+
+            _rigid = bullet.GetComponent<Rigidbody2D>();
+
+            //Vector2 vec2 = new Vector2(Mathf.Sin(Mathf.PI * 10.0f * _curPatternCount / _maxPatternCount[_patternIndex]), -1.0f);
+            Vector2 vec2 = new Vector2(Mathf.Cos(Mathf.PI * 2.0f * i / roundNum), Mathf.Sin(Mathf.PI * 2.0f * i / roundNum));
+            _rigid.AddForce(vec2.normalized * (ENEMY_FIRE_FORCE - 1), ForceMode2D.Impulse);
+
+            Vector3 rotVec = Vector3.forward * 360 * i / roundNum + Vector3.forward * 90;
+            bullet.transform.Rotate(rotVec);
+        }
+        
 
         _curPatternCount++;
         if (_curPatternCount < _maxPatternCount[_patternIndex])
